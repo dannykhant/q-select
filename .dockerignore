@@ -1,0 +1,16 @@
+.venv/
+.git/
+.gitignore
+.env
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+log
+training.ipynb
+proposal.md
+rewriter_plan.md
+training_plan.md
+initdb/
+tests/
+artifacts/reward_cache_*.json

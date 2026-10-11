@@ -1,0 +1,23 @@
+[project]
+name = "q-select"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.143.0",
+    "httpx>=0.28.1",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.3",
+    "pandas>=3.0.5",
+    "psycopg[binary]>=3.3.5",
+    "sqlglot>=30.18.0",
+    "streamlit>=1.65.0",
+    "tqdm>=4.70.1",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]

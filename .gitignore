@@ -1,0 +1,15 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Training artifacts (keep the trained Q-table, ignore bulky reward caches)
+artifacts/reward_cache_*.json
+
+.env
