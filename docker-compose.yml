@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: qselect-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tpch_sf1}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=1GB"
+      - "-c"
+      - "work_mem=64MB"
+      - "-c"
+      - "maintenance_work_mem=256MB"
+      - "-c"
+      - "effective_cache_size=2GB"
+      - "-c"
+      - "max_connections=100"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-tpch_sf1}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  qselect-api:
+    build: .
+    image: qselect:latest
+    container_name: qselect-api
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      QS_TABLE_PATH: /app/artifacts/q_table.json
+      QS_PLANNER_ESTIMATE: "true"
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: ${POSTGRES_DB:-tpch_sf1}
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  qselect-ui:
+    image: qselect:latest
+    container_name: qselect-ui
+    restart: unless-stopped
+    command:
+      - "streamlit"
+      - "run"
+      - "frontend/app.py"
+      - "--server.address=0.0.0.0"
+      - "--server.port=8501"
+      - "--server.headless=true"
+    ports:
+      - "${UI_PORT:-8501}:8501"
+    environment:
+      QS_API_URL: http://qselect-api:8000
+    depends_on:
+      - qselect-api
+
+volumes:
+  pgdata:
+    name: qselect_pgdata
